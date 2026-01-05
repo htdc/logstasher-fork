@@ -28,7 +28,7 @@ module LogStasher
   @backtrace = true
 
   def remove_existing_log_subscriptions
-    ::ActiveSupport::LogSubscriber.log_subscribers.each do |subscriber|
+    ::ActiveSupport::LogSubscriber.log_subscribers.dup.each do |subscriber|
       case subscriber.class.name
       when 'ActionView::LogSubscriber'
         unsubscribe(:action_view, subscriber)

@@ -58,7 +58,7 @@ describe LogStasher do
       if LogStasher.has_active_job?
         # In Rails 8, ActiveJob::LogSubscriber may not be in the log_subscribers list
         # at test time due to initialization order, so we allow rather than expect the call
-        allow(ActiveJob::LogSubscriber).to receive(:detach_from).with(:active_job)
+        expect(ActiveJob::LogSubscriber).to receive(:detach_from).with(:active_job).at_least(:once)
         LogStasher.remove_existing_log_subscriptions
       else
         expect(ActiveSupport::Notifications.notifier.listeners_for('perform.active_job')).to eq([])
@@ -67,14 +67,14 @@ describe LogStasher do
 
     it 'should remove subscribers for all events' do
       # Verify detach_from is called, allowing that it might already be in the subscribers list
-      allow(ActionView::LogSubscriber).to receive(:detach_from).with(:action_view)
+      expect(ActionView::LogSubscriber).to receive(:detach_from).with(:action_view).at_least(:once)
       LogStasher.remove_existing_log_subscriptions
       # Just verify the method was called if any ActionView subscribers were present
     end
 
     it 'should remove subscribsers for mailer events' do
       # Verify detach_from is called, allowing that it might already be in the subscribers list
-      allow(ActionMailer::LogSubscriber).to receive(:detach_from).with(:action_mailer)
+      expect(ActionMailer::LogSubscriber).to receive(:detach_from).with(:action_mailer).at_least(:once)
       LogStasher.remove_existing_log_subscriptions
     end
 
